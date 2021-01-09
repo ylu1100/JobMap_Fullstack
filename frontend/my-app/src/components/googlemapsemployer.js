@@ -7,15 +7,45 @@ const API_KEY=process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 
 const GMap=()=>{
-  
+      
       const [userLoc,setLoc]=useState({
           lat:0,
           lng:0,
+          posts:[]
       });
       useEffect(()=>{
+        
           geocode();
+          //listJobPosts();
       },[])
-     
+    //   async function listJobPosts(){
+    //     try {
+    //       const response=await fetch("http://localhost:5000/dashboard/getjobposts",{
+    //         method:"GET",
+    //         headers:{token:localStorage.token}
+    //       })
+    //       const parseRes=await response.json()
+    //       const state=userLoc
+    //       console.log(userLoc)
+    //       for( let i=0;i<parseRes.length;i++){
+    //         userLoc.posts.push(parseRes[i])
+    //       }
+          
+    //     } catch (error) {
+    //       console.error(error.message)
+    //     }
+    // }
+    const listjobposts=()=>{
+        if(userLoc.posts===null){
+          return
+        }
+        return userLoc.posts.map((post,index)=>{
+          return <div style={{background:"white"}}><h1 style={{fontSize:"15px"}}>Position: {post.job_title}</h1>
+          <h1 style={{fontSize:"15px"}}>Location: {post.job_location}</h1>
+          <h1 style={{fontSize:"15px"}}>Description: {post.job_desc}</h1>
+          </div>
+        })
+     }
      async function geocode(){
         try {
             const response = await fetch("http://localhost:5000/dashboard",{
@@ -25,18 +55,48 @@ const GMap=()=>{
         
         const parseRes=await response.json()
         
-        setLoc({...userLoc,lat:parseRes.address_lat,lng:parseRes.address_long})
+        setLoc({...userLoc,lat:parseRes.address_lat,lng:parseRes.address_long,posts:parseRes.job_post})
         
         
         } catch (error) {
             console.error(error.message)
         }
       }
+      async function postJob(e){
+       
+        try {
+            const post={
+              job_title: document.getElementById("jobTitle").value,
+              job_location: document.getElementById("jobLoc").value,
+              job_desc: document.getElementById("jobDesc").value
+            }
+            console.log(post)
+            const response = await fetch("http://localhost:5000/dashboard/postjob",{
+                method:"POST",
+                headers:{"Content-Type":"application/json",token:localStorage.token},
+                body:JSON.stringify(post)
+            });
+            const parseRes=await response.json()
+            console.log(parseRes)
+        } catch (error) {
+            
+        }
+    }
+
+    console.log(userLoc)
     return (
      <Fragment>
      <h1 style={{textAlign:"center",color:"white"}}>{userLoc.lat}</h1>
      <h1 style={{ textAlign:"center",color:"white"}}>{userLoc.lng}</h1>
-     
+     <div id="postwindow" style={{maxHeight:"300px",maxWidth:"400px" }}>
+        {listjobposts()}
+     </div>
+     <form onSubmit={(e)=>postJob(e)}>
+            <input type="text" id="jobTitle" name="jobTitle" placeholder="Job Title"></input>
+            <input type="text" id="jobLoc" name="jobLoc"placeholder="Location"></input>
+            <input type="text" id="jobDesc" name="jobDesc"placeholder="Description/Qualifications"></input>
+            <button>Submit</button>
+        </form>
      <div style={{
         
     alignItems: 'center',

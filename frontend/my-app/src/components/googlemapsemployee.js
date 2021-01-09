@@ -18,23 +18,39 @@ const GMap=()=>{
   
 const displayMarkers = () => {
   return userLoc.stores.map((store, index) => {
-    return <Marker  onClick={()=>openEmployer(store.employername)} key={index} id={index} position={{
+    return <Marker  onClick={()=>openEmployer(store.jobposts,store.employername)} key={index} id={index} position={{
      lat: store.latitude,
      lng: store.longitude
    }}
   />
   })
 }
-const openEmployer =(str)=>{
+const displayPosts=()=>{
+  console.log(userLoc.posts)
+  if(userLoc.posts===null){
+    return 
+  }
+  return userLoc.posts.map((post,index)=>{
+    return <div style={{background:"white"}}><h1 style={{fontSize:"15px"}}>Position: {post.job_title}</h1>
+          <h1 style={{fontSize:"15px"}}>Location: {post.job_location}</h1>
+          <h1 style={{fontSize:"15px"}}>Description: {post.job_desc}</h1>
+          </div>
+  })
+}
+const openEmployer =(posts,str)=>{
     document.getElementById("employerName").innerHTML=str;
     document.getElementById("employerName").style.display="block";
+    var state = userLoc
+    setLoc({...userLoc,lat:state.lat,lng:state.lng,orgLat:state.orgLat,orgLng:state.orgLng,stores:state.stores,posts:posts})
 }
       const [userLoc,setLoc]=useState({
           lat:0,
           lng:0,
           orgLat:0,
           orgLng:0,
-          stores:[]
+          stores:[], //employers
+          posts:[]
+          
       });
       useEffect(()=>{
           geocode();
@@ -78,23 +94,25 @@ const openEmployer =(str)=>{
         const empLoc=await res.json()
         var empList=[]
         for(let i=0;i<empLoc.length;i++){
-          empList.push({employername:empLoc[i].user_name,latitude:empLoc[i].address_lat,longitude:empLoc[i].address_long})
+          empList.push({jobposts:empLoc[i].job_post,employername:empLoc[i].user_name,latitude:empLoc[i].address_lat,longitude:empLoc[i].address_long})
         }
         setLoc({...userLoc,lat:parseRes.address_lat,lng:parseRes.address_long,orgLat:parseRes.address_lat,orgLng:parseRes.address_long,stores:empList})
-       
+        
         
        
         } catch (error) {
             console.error(error.message)
         }
       }
-      console.log(userLoc)
+      
     return (
      <Fragment>
      <h1 style={{textAlign:"center",color:"white"}}>{userLoc.lat}</h1>
      <h1 style={{ textAlign:"center",color:"white"}}>{userLoc.lng}</h1>
      <h1 id="employerName"style={{display:"none", textAlign:"center",color:"white"}}>{userLoc.lng}</h1>
-     
+     <div id="postwindow" style={{maxHeight:"300px",maxWidth:"400px" }}>
+        {displayPosts()}
+     </div>
      <form onSubmit={updateLoc}>
      <input id="newAddress" type="text" name="newAddress" placeholder="Enter New Address"></input>
      <button style={{width:"10%",border:"0"}} className="btn btn-primary  mx-auto d-block">Search</button>

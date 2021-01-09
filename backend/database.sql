@@ -8,7 +8,9 @@ CREATE TABLE employeeusers(
     user_email VARCHAR(255) NOT NULL,
     user_password VARCHAR(255) NOT NULL,
     user_address VARCHAR(255) DEFAULT '',
-    isEmployer BOOLEAN DEFAULT false);
+    isemployer BOOLEAN DEFAULT false,
+    address_long DOUBLE PRECISION DEFAULT 0.0,
+    address_lat DOUBLE PRECISION DEFAULT 0.0  );
 
 CREATE TABLE employer(
     user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -16,5 +18,7 @@ CREATE TABLE employer(
     user_email VARCHAR(255) NOT NULL,
     user_password VARCHAR(255) NOT NULL,
     user_address VARCHAR(255) NOT NULL,
-    isEmployer BOOLEAN DEFAULT true);
+    isemployer BOOLEAN DEFAULT true,
+    address_long DOUBLE PRECISION DEFAULT 0.0,
+    address_lat DOUBLE PRECISION DEFAULT 0.0, );
 )

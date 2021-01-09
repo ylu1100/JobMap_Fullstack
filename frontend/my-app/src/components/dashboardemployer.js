@@ -30,7 +30,7 @@ const Dashboardemployer =({setAuth}) => {
             console.error(error.message)
         }
     }
-    console.log(user.username)
+    
     return (
         <Fragment>
         <button  className="btn btn-primary mx-auto d-block" onClick={ (e) =>logout(e)}>Log Out</button>
@@ -39,6 +39,7 @@ const Dashboardemployer =({setAuth}) => {
         <h1 style={{textAlign:"center"}}>{user.firstname}</h1>
         <h1 style={{textAlign:"center"}}>{user.lastname}</h1>
         <h1 style={{textAlign:"center"}}>{user.email}</h1>
+        
         <div style={{display:"block",margin:"auto"}}>
         <GoogleApiWrapper  ></GoogleApiWrapper>
         </div>
